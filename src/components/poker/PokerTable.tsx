@@ -27,6 +27,7 @@ export function PokerTable() {
   const [revealingCards, setRevealingCards] = useState(false);
   const [celebratingWinner, setCelebratingWinner] = useState(false);
   const [handNumber, setHandNumber] = useState(1);
+  const [winningAmount, setWinningAmount] = useState(0);
   const { playSound } = useSoundEffects();
 
   const processAITurn = useCallback(() => {
@@ -211,8 +212,8 @@ export function PokerTable() {
     setHandNumber(prev => prev + 1);
     playSound('cardDeal');
 
-    // Rotate dealer
-    const newDealerIndex = (prevState.dealerIndex + 1) % prevState.players.length;
+    // Rotate dealer counter-clockwise
+    const newDealerIndex = (prevState.dealerIndex - 1 + prevState.players.length) % prevState.players.length;
     
     // Simulate dealing animation
     setTimeout(() => {
@@ -394,6 +395,7 @@ export function PokerTable() {
       setTimeout(() => {
         setCelebratingWinner(true);
         playSound('winner');
+        setWinningAmount(newState.pot);
         setGameState(prev => {
           const updatedPlayers = prev.players.map(p => 
             p.id === winner.id ? { ...p, chips: p.chips + prev.pot } : p
@@ -430,6 +432,7 @@ export function PokerTable() {
 
         setCelebratingWinner(true);
         playSound('winner');
+        setWinningAmount(newState.pot);
         
         setGameState(prev => {
           const updatedPlayers = prev.players.map(p => 
@@ -551,7 +554,11 @@ export function PokerTable() {
             <div className={`bg-background/20 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-primary/50 transition-all ${celebratingWinner ? 'animate-winner-celebration' : ''}`}>
               <div className="flex items-center gap-2">
                 <Circle className="w-5 h-5 fill-chip-gold text-chip-gold" />
-                <span className="text-2xl font-bold text-foreground">Pot: {gameState.pot}</span>
+                {celebratingWinner ? (
+                  <span className="text-2xl font-bold text-chip-gold">Won: {winningAmount}</span>
+                ) : (
+                  <span className="text-2xl font-bold text-foreground">Pot: {gameState.pot}</span>
+                )}
                 {celebratingWinner && (
                   <Sparkles className="w-5 h-5 text-chip-gold animate-sparkle" />
                 )}
@@ -575,8 +582,8 @@ export function PokerTable() {
             </div>
           </div>
 
-          {/* Bottom - Human Player */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+          {/* Bottom Left - Human Player */}
+          <div className="absolute bottom-4 left-4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={humanPlayer}
