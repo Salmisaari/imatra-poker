@@ -112,7 +112,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
           <div className="space-y-8">
             {/* Hero Title */}
             <div className="text-center space-y-4">
-              <h1 className="text-6xl font-bold text-white drop-shadow-2xl">Club G Poker</h1>
+              <h1 className="text-6xl font-bold text-white drop-shadow-2xl">Imatra Poker</h1>
               <p className="text-2xl text-white/90 drop-shadow-lg">Play with friends online or practice against AI</p>
             </div>
 
@@ -163,7 +163,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Share2 className="w-6 h-6 text-primary" />
-                  Play Online
+                  Play with friends
                 </CardTitle>
                 <CardDescription>
                   Create a room and invite friends to play
