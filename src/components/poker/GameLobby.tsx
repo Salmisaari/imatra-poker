@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Share2, Bot, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import pokerTableImage from '@/assets/poker-table-hero.png';
 
 interface GameLobbyProps {
   onStartAIGame: (numPlayers: number) => void;
@@ -18,7 +19,19 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
   const [playerName, setPlayerName] = useState('');
   const [showNamePrompt, setShowNamePrompt] = useState(false);
   const [action, setAction] = useState<'create' | 'join'>('create');
+  const [joinCode, setJoinCode] = useState('');
   const { toast } = useToast();
+
+  // Check for pending join code from URL
+  useEffect(() => {
+    const pendingCode = sessionStorage.getItem('pending_join_code');
+    if (pendingCode) {
+      setJoinCode(pendingCode);
+      setAction('join');
+      setShowNamePrompt(true);
+      sessionStorage.removeItem('pending_join_code');
+    }
+  }, []);
 
   const handleCreateOnlineGame = () => {
     if (!playerName.trim()) {
@@ -45,6 +58,8 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
     setShowNamePrompt(false);
     if (action === 'create') {
       onCreateOnlineGame(lobbySize, playerName);
+    } else if (action === 'join' && joinCode) {
+      onJoinGame(joinCode, playerName);
     }
   };
 
@@ -54,7 +69,11 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Enter Your Name</CardTitle>
-            <CardDescription>Choose a name for the game</CardDescription>
+            <CardDescription>
+              {action === 'join' && joinCode 
+                ? `Joining room: ${joinCode}` 
+                : 'Choose a name for the game'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Input
@@ -75,10 +94,19 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
           </CardContent>
         </Card>
       ) : (
-        <div className="w-full max-w-4xl space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-foreground">Texas Hold'em Poker</h1>
-            <p className="text-muted-foreground">Choose your game mode</p>
+        <div className="w-full max-w-6xl space-y-6">
+          {/* Hero Image */}
+          <div className="relative rounded-xl overflow-hidden shadow-2xl">
+            <img 
+              src={pokerTableImage} 
+              alt="Poker Table" 
+              className="w-full h-auto object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
+              <h1 className="text-5xl font-bold text-foreground mb-2">Texas Hold'em Poker</h1>
+              <p className="text-xl text-muted-foreground">Play with friends online or practice against AI</p>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">

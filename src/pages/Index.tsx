@@ -9,11 +9,12 @@ const Index = () => {
   const { createRoom, joinRoom } = useGameRoom();
 
   useEffect(() => {
-    // Check for join code in URL
+    // Check for join code in URL and auto-prompt for name
     const urlParams = new URLSearchParams(window.location.search);
     const joinCode = urlParams.get('join');
     if (joinCode) {
       sessionStorage.setItem('pending_join_code', joinCode);
+      // The GameLobby will handle prompting for name before joining
     }
   }, []);
 
