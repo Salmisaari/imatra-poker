@@ -9,10 +9,9 @@ import { useToast } from '@/hooks/use-toast';
 interface GameLobbyProps {
   onStartAIGame: (numPlayers: number) => void;
   onCreateOnlineGame: (numPlayers: number) => void;
-  onJoinGame: (roomCode: string) => void;
 }
 
-export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: GameLobbyProps) {
+export function GameLobby({ onStartAIGame, onCreateOnlineGame }: GameLobbyProps) {
   const [lobbySize, setLobbySize] = useState(4);
   const { toast } = useToast();
 

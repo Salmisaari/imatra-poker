@@ -241,11 +241,20 @@ export function PokerTable() {
       attempts++;
     }
 
-    // Check if betting round is complete
+    // Check if betting round is complete: all active players have matching bets
+    // and we've gone full circle (back to first player who acted this round)
     const allBetsEqual = activePlayers.every(p => p.currentBet === state.currentBet);
-    const hasActed = nextIndex === state.dealerIndex || activePlayers.length === 1;
+    
+    // In preflop, betting is complete when action returns to big blind
+    // In other rounds, betting is complete when action returns to first player after dealer
+    const firstToActIndex = state.phase === 'preflop' 
+      ? (state.dealerIndex + 3) % state.players.length // UTG (after BB)
+      : (state.dealerIndex + 1) % state.players.length; // SB position
+    
+    // Check if we've completed the betting round
+    const roundComplete = allBetsEqual && nextIndex === firstToActIndex;
 
-    if (allBetsEqual && (hasActed || attempts >= state.players.length)) {
+    if (roundComplete || activePlayers.length === 1) {
       return advancePhase(state);
     }
 
@@ -286,7 +295,16 @@ export function PokerTable() {
     }
 
     newState.currentBet = 0;
-    newState.activePlayerIndex = (newState.dealerIndex + 1) % newState.players.length;
+    
+    // After flop/turn/river, first to act is first active player after dealer (small blind position)
+    let firstToAct = (newState.dealerIndex + 1) % newState.players.length;
+    let attempts = 0;
+    while (newState.players[firstToAct].status !== 'active' && attempts < newState.players.length) {
+      firstToAct = (firstToAct + 1) % newState.players.length;
+      attempts++;
+    }
+    
+    newState.activePlayerIndex = firstToAct;
 
     return newState;
   }

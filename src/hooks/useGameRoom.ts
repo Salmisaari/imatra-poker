@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -8,7 +8,7 @@ export interface GameRoom {
   name: string;
   max_players: number;
   status: string;
-  host_id: string;
+  host_id: string | null;
 }
 
 export function useGameRoom() {
@@ -16,22 +16,23 @@ export function useGameRoom() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const createRoom = async (maxPlayers: number) => {
+  const createRoom = async (maxPlayers: number, playerName: string) => {
     setLoading(true);
     try {
       // Generate a random 6-character room code
       const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
       
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      // Create anonymous session ID
+      const sessionId = crypto.randomUUID();
+      localStorage.setItem('poker_session_id', sessionId);
 
       const { data, error } = await supabase
         .from('game_rooms')
         .insert({
           room_code: roomCode,
-          name: `${user.email?.split('@')[0]}'s Game`,
+          name: `${playerName}'s Game`,
           max_players: maxPlayers,
-          host_id: user.id,
+          host_id: null, // Anonymous
         })
         .select()
         .single();
@@ -41,8 +42,8 @@ export function useGameRoom() {
       // Join the room as host
       await supabase.from('game_room_players').insert({
         room_id: data.id,
-        user_id: user.id,
-        player_name: user.email?.split('@')[0] || 'Host',
+        user_id: sessionId,
+        player_name: playerName,
         position: 0,
         is_host: true,
       });
@@ -71,11 +72,12 @@ export function useGameRoom() {
     }
   };
 
-  const joinRoom = async (roomCode: string) => {
+  const joinRoom = async (roomCode: string, playerName: string) => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      // Create anonymous session ID
+      const sessionId = crypto.randomUUID();
+      localStorage.setItem('poker_session_id', sessionId);
 
       // Find room by code
       const { data: room, error: roomError } = await supabase
@@ -110,8 +112,8 @@ export function useGameRoom() {
       // Join room
       await supabase.from('game_room_players').insert({
         room_id: room.id,
-        user_id: user.id,
-        player_name: user.email?.split('@')[0] || 'Player',
+        user_id: sessionId,
+        player_name: playerName,
         position: nextPosition,
       });
 
@@ -138,16 +140,17 @@ export function useGameRoom() {
     if (!currentRoom) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const sessionId = localStorage.getItem('poker_session_id');
+      if (!sessionId) return;
 
       await supabase
         .from('game_room_players')
         .delete()
         .eq('room_id', currentRoom.id)
-        .eq('user_id', user.id);
+        .eq('user_id', sessionId);
 
       setCurrentRoom(null);
+      localStorage.removeItem('poker_session_id');
     } catch (error) {
       console.error('Error leaving room:', error);
     }
