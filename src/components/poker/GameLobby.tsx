@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Share2, Bot, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import pokerTableBg from '@/assets/poker-table-bg.png';
+import clubGTable from '@/assets/club-g-table.png';
 
 interface GameLobbyProps {
   onStartAIGame: (numPlayers: number) => void;
@@ -67,7 +67,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
     <div 
       className="min-h-screen flex items-end justify-center p-4 pb-12 relative"
       style={{
-        backgroundImage: `url(${pokerTableBg})`,
+        backgroundImage: `url(${clubGTable})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
