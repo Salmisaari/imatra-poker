@@ -471,7 +471,7 @@ export function PokerTable() {
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-end justify-end p-4 pb-8 pt-20 relative"
+      className="min-h-screen flex items-center justify-center p-4 relative"
       style={{
         backgroundImage: `url(${clubGTable})`,
         backgroundSize: 'cover',
@@ -490,11 +490,11 @@ export function PokerTable() {
         bigBlind={BIG_BLIND}
       />
       
-      <div className="w-full max-w-6xl relative z-10 mb-24">
+      <div className="w-full max-w-6xl relative z-10">
         {/* Poker Table - Invisible container */}
         <div className="relative aspect-[16/10] p-8">
           {/* Left Players */}
-          <div className="absolute left-4 top-1/2 -translate-y-1/2">
+          <div className="absolute left-12 top-1/2 -translate-y-1/2">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[5]}
@@ -505,7 +505,7 @@ export function PokerTable() {
           </div>
           
           {/* Top Left Player */}
-          <div className="absolute top-12 left-[20%]">
+          <div className="absolute top-12 left-1/4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[4]}
@@ -583,7 +583,7 @@ export function PokerTable() {
           </div>
 
           {/* Bottom Left - Human Player */}
-          <div className="absolute bottom-16 left-[20%]">
+          <div className="absolute bottom-16 left-1/4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={humanPlayer}
