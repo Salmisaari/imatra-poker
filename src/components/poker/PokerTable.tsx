@@ -527,7 +527,7 @@ export function PokerTable() {
           </div>
 
           {/* Right Players */}
-          <div className="absolute right-8 bottom-[38%] space-y-4">
+          <div className="absolute right-8 bottom-[42%] space-y-4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[2]}
