@@ -494,7 +494,7 @@ export function PokerTable() {
         {/* Poker Table - Invisible container */}
         <div className="relative aspect-[16/10] p-8">
           {/* Left Players */}
-          <div className="absolute left-8 bottom-1/3 space-y-4">
+          <div className="absolute left-8 bottom-[46%] space-y-4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[5]}
@@ -527,7 +527,7 @@ export function PokerTable() {
           </div>
 
           {/* Right Players */}
-          <div className="absolute right-8 bottom-[42%] space-y-4">
+          <div className="absolute right-8 bottom-[46%] space-y-4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[2]}
