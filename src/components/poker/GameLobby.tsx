@@ -138,7 +138,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
                   Play with AI
                 </CardTitle>
                 <CardDescription>
-                  Play against AI opponents: Jaakko, Saku, Veeti, Tuomas, and Johannes
+                  Play against Imatran viimeiset toivot
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
