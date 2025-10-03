@@ -36,7 +36,9 @@ export function BettingControls({
   };
 
   return (
-    <div className="bg-card/90 backdrop-blur-sm border-2 border-border rounded-xl p-4 space-y-4">
+    <div className="bg-background/95 backdrop-blur-sm border-t-2 border-primary/50 rounded-t-3xl p-6 space-y-4 shadow-2xl animate-slide-in-bottom">
+      <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-2" />
+      
       <div className="text-center text-sm text-muted-foreground">
         Your Chips: <span className="text-accent font-bold">{playerChips}</span>
         {!canCheck && (

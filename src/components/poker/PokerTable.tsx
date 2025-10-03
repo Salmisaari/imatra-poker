@@ -379,7 +379,7 @@ export function PokerTable() {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 relative"
+      className="min-h-screen flex items-end justify-center p-4 pb-8 relative"
       style={{
         backgroundImage: `url(${clubGTable})`,
         backgroundSize: 'cover',
@@ -390,7 +390,7 @@ export function PokerTable() {
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/40" />
       
-      <div className="w-full max-w-6xl relative z-10">
+      <div className="w-full max-w-6xl relative z-10 mb-32">
         {/* Poker Table - Invisible container */}
         <div className="relative aspect-[16/10] p-8">
           {/* Top Players */}
@@ -451,9 +451,9 @@ export function PokerTable() {
           </div>
         </div>
 
-        {/* Betting Controls */}
+        {/* Betting Controls Drawer */}
         {gameState.phase !== 'showdown' && gameState.phase !== 'waiting' && (
-          <div className="mt-6">
+          <div className="fixed bottom-0 left-0 right-0 z-50">
             <BettingControls
               playerChips={humanPlayer.chips}
               currentBet={gameState.currentBet}

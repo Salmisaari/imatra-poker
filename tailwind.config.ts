@@ -98,6 +98,10 @@ export default {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.1)" },
         },
+        "slide-in-bottom": {
+          "0%": { transform: "translateY(100%)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -107,6 +111,7 @@ export default {
         "chip-slide": "chip-slide 0.3s ease-out",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "winner-celebration": "winner-celebration 0.6s ease-in-out",
+        "slide-in-bottom": "slide-in-bottom 0.3s ease-out",
       },
     },
   },
