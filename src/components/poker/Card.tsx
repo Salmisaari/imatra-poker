@@ -4,9 +4,17 @@ import { Heart, Diamond, Club, Spade } from 'lucide-react';
 interface CardProps {
   card: CardType;
   delay?: number;
+  size?: 'small' | 'normal' | 'large';
 }
 
-export function Card({ card, delay = 0 }: CardProps) {
+export function Card({ card, delay = 0, size = 'normal' }: CardProps) {
+  const sizeClasses = {
+    small: 'w-10 h-14 text-xs',
+    normal: 'w-16 h-24 text-base',
+    large: 'w-20 h-30 text-lg',
+  };
+  
+  const cardSize = sizeClasses[size];
   const suitIcons = {
     hearts: Heart,
     diamonds: Diamond,

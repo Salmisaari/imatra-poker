@@ -1,14 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { GameState, Player, PlayerAction, GamePhase } from '@/lib/poker/types';
 import { createDeck } from '@/lib/poker/deck';
 import { evaluateHand, compareHands } from '@/lib/poker/handEvaluator';
 import { getAIAction } from '@/lib/poker/aiPlayer';
 import { PlayerPosition } from './PlayerPosition';
+import { EnhancedPlayerPosition } from './EnhancedPlayerPosition';
 import { BettingControls } from './BettingControls';
 import { Card } from './Card';
 import { DealerButton } from './DealerButton';
+import { ChipStack } from './ChipStack';
+import { TableHeader } from './TableHeader';
 import { Circle, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import clubGTable from '@/assets/club-g-table.png';
 
 const SMALL_BLIND = 10;
@@ -21,6 +26,26 @@ export function PokerTable() {
   const [dealingCards, setDealingCards] = useState(false);
   const [revealingCards, setRevealingCards] = useState(false);
   const [celebratingWinner, setCelebratingWinner] = useState(false);
+  const [handNumber, setHandNumber] = useState(1);
+  const { playSound } = useSoundEffects();
+
+  const processAITurn = useCallback(() => {
+    setGameState(prev => {
+      const activePlayer = prev.players[prev.activePlayerIndex];
+      const { action, raiseAmount } = getAIAction(activePlayer, prev);
+      
+      // Play sound effects
+      if (action === 'fold') playSound('fold');
+      else playSound('chipSlide');
+      
+      toast({
+        description: `${activePlayer.name} ${action}${raiseAmount ? ` ${raiseAmount}` : ''}`,
+        duration: 1500,
+      });
+
+      return processAction(prev, action, raiseAmount);
+    });
+  }, [playSound]);
 
   // Process AI turns
   useEffect(() => {
@@ -37,7 +62,7 @@ export function PokerTable() {
         setIsProcessing(false);
       }, 1000);
     }
-  }, [gameState.activePlayerIndex, gameState.phase, isProcessing]);
+  }, [gameState.activePlayerIndex, gameState.phase, isProcessing, processAITurn]);
 
   function initializeGame(): GameState {
     const players: Player[] = [
@@ -139,6 +164,8 @@ export function PokerTable() {
     setDealingCards(true);
     setRevealingCards(false);
     setCelebratingWinner(false);
+    setHandNumber(prev => prev + 1);
+    playSound('cardDeal');
     
     const deck = createDeck();
     const players = prevState.players.map(p => ({
@@ -200,21 +227,8 @@ export function PokerTable() {
   }
 
   function handlePlayerAction(action: PlayerAction, amount?: number) {
+    playSound(action === 'fold' ? 'fold' : 'chipSlide');
     setGameState(prev => processAction(prev, action, amount));
-  }
-
-  function processAITurn() {
-    setGameState(prev => {
-      const activePlayer = prev.players[prev.activePlayerIndex];
-      const { action, raiseAmount } = getAIAction(activePlayer, prev);
-      
-      toast({
-        description: `${activePlayer.name} ${action}${raiseAmount ? ` ${raiseAmount}` : ''}`,
-        duration: 1500,
-      });
-
-      return processAction(prev, action, raiseAmount);
-    });
   }
 
   function processAction(state: GameState, action: PlayerAction, amount?: number): GameState {
@@ -326,52 +340,28 @@ export function PokerTable() {
 
     switch (state.phase) {
       case 'preflop':
-        // Burn one card, deal flop
-        setIsProcessing(true);
-        setTimeout(() => {
-          const flop = newState.deck.slice(1, 4).map(c => ({ ...c, faceUp: true }));
-          setGameState(prev => ({
-            ...prev,
-            communityCards: flop,
-            deck: prev.deck.slice(4),
-            phase: 'flop',
-            currentBet: 0,
-          }));
-          setIsProcessing(false);
-        }, 800);
-        return newState;
+        // Deal flop
+        const flop = newState.deck.slice(1, 4).map(c => ({ ...c, faceUp: true }));
+        newState.communityCards = flop;
+        newState.deck = newState.deck.slice(4);
+        newState.phase = 'flop';
+        break;
 
       case 'flop':
-        // Burn one card, deal turn
-        setIsProcessing(true);
-        setTimeout(() => {
-          const turn = { ...newState.deck[1], faceUp: true };
-          setGameState(prev => ({
-            ...prev,
-            communityCards: [...prev.communityCards, turn],
-            deck: prev.deck.slice(2),
-            phase: 'turn',
-            currentBet: 0,
-          }));
-          setIsProcessing(false);
-        }, 800);
-        return newState;
+        // Deal turn
+        const turn = { ...newState.deck[1], faceUp: true };
+        newState.communityCards.push(turn);
+        newState.deck = newState.deck.slice(2);
+        newState.phase = 'turn';
+        break;
 
       case 'turn':
-        // Burn one card, deal river
-        setIsProcessing(true);
-        setTimeout(() => {
-          const river = { ...newState.deck[1], faceUp: true };
-          setGameState(prev => ({
-            ...prev,
-            communityCards: [...prev.communityCards, river],
-            deck: prev.deck.slice(2),
-            phase: 'river',
-            currentBet: 0,
-          }));
-          setIsProcessing(false);
-        }, 800);
-        return newState;
+        // Deal river
+        const river = { ...newState.deck[1], faceUp: true };
+        newState.communityCards.push(river);
+        newState.deck = newState.deck.slice(2);
+        newState.phase = 'river';
+        break;
 
       case 'river':
         return determineWinner(newState);
@@ -407,18 +397,18 @@ export function PokerTable() {
       
       setTimeout(() => {
         setCelebratingWinner(true);
-        winner.chips += newState.pot;
-        setGameState(prev => ({
-          ...prev,
-          players: prev.players.map(p => 
+        playSound('winner');
+        setGameState(prev => {
+          const updatedPlayers = prev.players.map(p => 
             p.id === winner.id ? { ...p, chips: p.chips + prev.pot } : p
-          ),
-          pot: 0,
-        }));
-        
-        toast({
-          title: `🎉 ${winner.name} wins!`,
-          description: `Won ${newState.pot} chips`,
+          );
+          
+          toast({
+            title: `🎉 ${winner.name} wins!`,
+            description: `Won ${prev.pot} chips`,
+          });
+
+          return { ...prev, players: updatedPlayers, pot: 0 };
         });
 
         setTimeout(() => {
@@ -426,19 +416,10 @@ export function PokerTable() {
         }, 4000);
       }, 1000);
     } else {
-      // Reveal cards sequentially
-      newState.players.forEach((p, idx) => {
+      // Reveal cards
+      newState.players.forEach(p => {
         if (p.status !== 'folded') {
-          setTimeout(() => {
-            setGameState(prev => ({
-              ...prev,
-              players: prev.players.map((player, i) => 
-                i === idx && player.status !== 'folded'
-                  ? { ...player, holeCards: player.holeCards.map(c => ({ ...c, faceUp: true })) }
-                  : player
-              ),
-            }));
-          }, idx * 400);
+          p.holeCards = p.holeCards.map(c => ({ ...c, faceUp: true }));
         }
       });
 
@@ -452,25 +433,25 @@ export function PokerTable() {
         const winner = playerHands[0];
 
         setCelebratingWinner(true);
-        winner.player.chips += newState.pot;
+        playSound('winner');
         
-        setGameState(prev => ({
-          ...prev,
-          players: prev.players.map(p => 
+        setGameState(prev => {
+          const updatedPlayers = prev.players.map(p => 
             p.id === winner.player.id ? { ...p, chips: p.chips + prev.pot } : p
-          ),
-          pot: 0,
-        }));
+          );
 
-        toast({
-          title: `🎉 ${winner.player.name} wins!`,
-          description: `${winner.hand.name} - Won ${newState.pot} chips`,
+          toast({
+            title: `🎉 ${winner.player.name} wins!`,
+            description: `${winner.hand.name} - Won ${prev.pot} chips`,
+          });
+
+          return { ...prev, players: updatedPlayers, pot: 0 };
         });
 
         setTimeout(() => {
           setGameState(prev => startNewHand(prev));
         }, 4000);
-      }, activePlayers.length * 400 + 800);
+      }, 2000);
     }
 
     return newState;
@@ -478,10 +459,20 @@ export function PokerTable() {
 
   const humanPlayer = gameState.players[0];
   const isPlayerTurn = gameState.activePlayerIndex === 0 && gameState.phase !== 'showdown';
+  const callAmount = gameState.currentBet - humanPlayer.currentBet;
+  const canCheck = callAmount === 0;
+
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts({
+    onAction: handlePlayerAction,
+    disabled: !isPlayerTurn || isProcessing,
+    canCheck,
+    callAmount,
+  });
 
   return (
     <div 
-      className="min-h-screen flex items-end justify-center p-4 pb-8 relative"
+      className="min-h-screen flex flex-col items-end justify-center p-4 pb-8 relative"
       style={{
         backgroundImage: `url(${clubGTable})`,
         backgroundSize: 'cover',
@@ -492,66 +483,69 @@ export function PokerTable() {
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/40" />
       
+      {/* Table Header */}
+      <TableHeader
+        tableName="Imatra Poker - Table #1"
+        handNumber={handNumber}
+        smallBlind={SMALL_BLIND}
+        bigBlind={BIG_BLIND}
+      />
+      
       <div className="w-full max-w-6xl relative z-10 mb-32">
         {/* Poker Table - Invisible container */}
         <div className="relative aspect-[16/10] p-8">
           {/* Left Players */}
           <div className="absolute left-4 top-1/4 space-y-4">
             <div className="relative">
-              <PlayerPosition
+              <EnhancedPlayerPosition
                 player={gameState.players[5]}
                 isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[5].id}
                 showCards={false}
               />
-              {gameState.players[5].isDealer && <DealerButton playerIndex={5} />}
             </div>
           </div>
           
           {/* Top Left Player */}
           <div className="absolute top-4 left-1/4">
             <div className="relative">
-              <PlayerPosition
+              <EnhancedPlayerPosition
                 player={gameState.players[4]}
                 isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[4].id}
                 showCards={false}
               />
-              {gameState.players[4].isDealer && <DealerButton playerIndex={4} />}
             </div>
           </div>
           
           {/* Top Right Player */}
           <div className="absolute top-4 right-1/4">
             <div className="relative">
-              <PlayerPosition
+              <EnhancedPlayerPosition
                 player={gameState.players[3]}
                 isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[3].id}
                 showCards={false}
               />
-              {gameState.players[3].isDealer && <DealerButton playerIndex={3} />}
             </div>
           </div>
 
           {/* Right Players */}
           <div className="absolute right-4 top-1/4 space-y-4">
             <div className="relative">
-              <PlayerPosition
+              <EnhancedPlayerPosition
                 player={gameState.players[2]}
                 isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[2].id}
                 showCards={false}
               />
-              {gameState.players[2].isDealer && <DealerButton playerIndex={2} />}
             </div>
           </div>
           
           {/* Bottom Right Player */}
           <div className="absolute bottom-4 right-1/4">
             <div className="relative">
-              <PlayerPosition
+              <EnhancedPlayerPosition
                 player={gameState.players[1]}
                 isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[1].id}
                 showCards={false}
               />
-              {gameState.players[1].isDealer && <DealerButton playerIndex={1} />}
             </div>
           </div>
 
@@ -588,12 +582,11 @@ export function PokerTable() {
           {/* Bottom - Human Player */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
             <div className="relative">
-              <PlayerPosition
+              <EnhancedPlayerPosition
                 player={humanPlayer}
                 isActive={isPlayerTurn}
                 showCards={true}
               />
-              {humanPlayer.isDealer && <DealerButton playerIndex={0} />}
             </div>
           </div>
         </div>

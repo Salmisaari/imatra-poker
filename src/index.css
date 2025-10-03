@@ -51,6 +51,9 @@ All colors MUST be HSL.
     --chip-red: 0 85% 60%;
     --chip-blue: 210 85% 55%;
     --chip-green: 142 70% 45%;
+    --chip-black: 0 0% 20%;
+    --chip-purple: 280 70% 50%;
+    --chip-white: 0 0% 95%;
     --card-red: 0 85% 50%;
   }
 }

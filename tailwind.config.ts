@@ -61,6 +61,9 @@ export default {
           red: "hsl(var(--chip-red))",
           blue: "hsl(var(--chip-blue))",
           green: "hsl(var(--chip-green))",
+          black: "hsl(var(--chip-black))",
+          purple: "hsl(var(--chip-purple))",
+          white: "hsl(var(--chip-white))",
         },
       },
       borderRadius: {
