@@ -89,6 +89,32 @@ export function PokerTable() {
         isAI: true,
         position: 3,
       },
+      {
+        id: 'ai4',
+        name: 'Diana',
+        chips: STARTING_CHIPS,
+        holeCards: [],
+        currentBet: 0,
+        status: 'active',
+        isDealer: false,
+        isSmallBlind: false,
+        isBigBlind: false,
+        isAI: true,
+        position: 4,
+      },
+      {
+        id: 'ai5',
+        name: 'Eve',
+        chips: STARTING_CHIPS,
+        holeCards: [],
+        currentBet: 0,
+        status: 'active',
+        isDealer: false,
+        isSmallBlind: false,
+        isBigBlind: false,
+        isAI: true,
+        position: 5,
+      },
     ];
 
     return startNewHand({
@@ -393,28 +419,50 @@ export function PokerTable() {
       <div className="w-full max-w-6xl relative z-10 mb-32">
         {/* Poker Table - Invisible container */}
         <div className="relative aspect-[16/10] p-8">
-          {/* Top Players */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-8">
-            {gameState.players.slice(1, 3).map(player => (
-              <PlayerPosition
-                key={player.id}
-                player={player}
-                isActive={gameState.players[gameState.activePlayerIndex]?.id === player.id}
-                showCards={false}
-              />
-            ))}
+          {/* Left Players */}
+          <div className="absolute left-4 top-1/4 space-y-4">
+            <PlayerPosition
+              player={gameState.players[5]}
+              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[5].id}
+              showCards={false}
+            />
+          </div>
+          
+          {/* Top Left Player */}
+          <div className="absolute top-4 left-1/4">
+            <PlayerPosition
+              player={gameState.players[4]}
+              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[4].id}
+              showCards={false}
+            />
+          </div>
+          
+          {/* Top Right Player */}
+          <div className="absolute top-4 right-1/4">
+            <PlayerPosition
+              player={gameState.players[3]}
+              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[3].id}
+              showCards={false}
+            />
           </div>
 
-          {/* Right Player */}
-          {gameState.players[3] && (
-            <div className="absolute right-8 top-1/2 -translate-y-1/2">
-              <PlayerPosition
-                player={gameState.players[3]}
-                isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[3].id}
-                showCards={false}
-              />
-            </div>
-          )}
+          {/* Right Players */}
+          <div className="absolute right-4 top-1/4 space-y-4">
+            <PlayerPosition
+              player={gameState.players[2]}
+              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[2].id}
+              showCards={false}
+            />
+          </div>
+          
+          {/* Bottom Right Player */}
+          <div className="absolute bottom-4 right-1/4">
+            <PlayerPosition
+              player={gameState.players[1]}
+              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[1].id}
+              showCards={false}
+            />
+          </div>
 
           {/* Center - Pot and Community Cards */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
