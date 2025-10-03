@@ -6,7 +6,8 @@ import { getAIAction } from '@/lib/poker/aiPlayer';
 import { PlayerPosition } from './PlayerPosition';
 import { BettingControls } from './BettingControls';
 import { Card } from './Card';
-import { Circle } from 'lucide-react';
+import { DealerButton } from './DealerButton';
+import { Circle, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import clubGTable from '@/assets/club-g-table.png';
 
@@ -17,6 +18,9 @@ const STARTING_CHIPS = 1000;
 export function PokerTable() {
   const [gameState, setGameState] = useState<GameState>(initializeGame());
   const [isProcessing, setIsProcessing] = useState(false);
+  const [dealingCards, setDealingCards] = useState(false);
+  const [revealingCards, setRevealingCards] = useState(false);
+  const [celebratingWinner, setCelebratingWinner] = useState(false);
 
   // Process AI turns
   useEffect(() => {
@@ -132,6 +136,10 @@ export function PokerTable() {
   }
 
   function startNewHand(prevState: GameState): GameState {
+    setDealingCards(true);
+    setRevealingCards(false);
+    setCelebratingWinner(false);
+    
     const deck = createDeck();
     const players = prevState.players.map(p => ({
       ...p,
@@ -171,6 +179,11 @@ export function PokerTable() {
     }
 
     const firstToAct = (bbIndex + 1) % players.length;
+
+    // Simulate dealing animation
+    setTimeout(() => {
+      setDealingCards(false);
+    }, 2000);
 
     return {
       players,
@@ -313,28 +326,52 @@ export function PokerTable() {
 
     switch (state.phase) {
       case 'preflop':
-        // Deal flop
-        const flop = newState.deck.slice(0, 3).map(c => ({ ...c, faceUp: true }));
-        newState.communityCards = flop;
-        newState.deck = newState.deck.slice(3);
-        newState.phase = 'flop';
-        break;
+        // Burn one card, deal flop
+        setIsProcessing(true);
+        setTimeout(() => {
+          const flop = newState.deck.slice(1, 4).map(c => ({ ...c, faceUp: true }));
+          setGameState(prev => ({
+            ...prev,
+            communityCards: flop,
+            deck: prev.deck.slice(4),
+            phase: 'flop',
+            currentBet: 0,
+          }));
+          setIsProcessing(false);
+        }, 800);
+        return newState;
 
       case 'flop':
-        // Deal turn
-        const turn = { ...newState.deck[0], faceUp: true };
-        newState.communityCards.push(turn);
-        newState.deck = newState.deck.slice(1);
-        newState.phase = 'turn';
-        break;
+        // Burn one card, deal turn
+        setIsProcessing(true);
+        setTimeout(() => {
+          const turn = { ...newState.deck[1], faceUp: true };
+          setGameState(prev => ({
+            ...prev,
+            communityCards: [...prev.communityCards, turn],
+            deck: prev.deck.slice(2),
+            phase: 'turn',
+            currentBet: 0,
+          }));
+          setIsProcessing(false);
+        }, 800);
+        return newState;
 
       case 'turn':
-        // Deal river
-        const river = { ...newState.deck[0], faceUp: true };
-        newState.communityCards.push(river);
-        newState.deck = newState.deck.slice(1);
-        newState.phase = 'river';
-        break;
+        // Burn one card, deal river
+        setIsProcessing(true);
+        setTimeout(() => {
+          const river = { ...newState.deck[1], faceUp: true };
+          setGameState(prev => ({
+            ...prev,
+            communityCards: [...prev.communityCards, river],
+            deck: prev.deck.slice(2),
+            phase: 'river',
+            currentBet: 0,
+          }));
+          setIsProcessing(false);
+        }, 800);
+        return newState;
 
       case 'river':
         return determineWinner(newState);
@@ -358,6 +395,8 @@ export function PokerTable() {
   function determineWinner(state: GameState): GameState {
     const newState = { ...state };
     newState.phase = 'showdown';
+    
+    setRevealingCards(true);
 
     const activePlayers = newState.players.filter(
       p => p.status === 'active' || p.status === 'all-in'
@@ -365,37 +404,74 @@ export function PokerTable() {
 
     if (activePlayers.length === 1) {
       const winner = activePlayers[0];
-      winner.chips += newState.pot;
-      toast({
-        title: `${winner.name} wins!`,
-        description: `Won ${newState.pot} chips`,
-      });
+      
+      setTimeout(() => {
+        setCelebratingWinner(true);
+        winner.chips += newState.pot;
+        setGameState(prev => ({
+          ...prev,
+          players: prev.players.map(p => 
+            p.id === winner.id ? { ...p, chips: p.chips + prev.pot } : p
+          ),
+          pot: 0,
+        }));
+        
+        toast({
+          title: `🎉 ${winner.name} wins!`,
+          description: `Won ${newState.pot} chips`,
+        });
+
+        setTimeout(() => {
+          setGameState(prev => startNewHand(prev));
+        }, 4000);
+      }, 1000);
     } else {
-      const playerHands = activePlayers.map(p => ({
-        player: p,
-        hand: evaluateHand([...p.holeCards.map(c => ({ ...c, faceUp: true })), ...newState.communityCards]),
-      }));
-
-      playerHands.sort((a, b) => compareHands(b.hand, a.hand));
-      const winner = playerHands[0];
-
-      winner.player.chips += newState.pot;
-      toast({
-        title: `${winner.player.name} wins!`,
-        description: `${winner.hand.name} - Won ${newState.pot} chips`,
-      });
-
-      // Show all hands
-      newState.players.forEach(p => {
+      // Reveal cards sequentially
+      newState.players.forEach((p, idx) => {
         if (p.status !== 'folded') {
-          p.holeCards = p.holeCards.map(c => ({ ...c, faceUp: true }));
+          setTimeout(() => {
+            setGameState(prev => ({
+              ...prev,
+              players: prev.players.map((player, i) => 
+                i === idx && player.status !== 'folded'
+                  ? { ...player, holeCards: player.holeCards.map(c => ({ ...c, faceUp: true })) }
+                  : player
+              ),
+            }));
+          }, idx * 400);
         }
       });
-    }
 
-    setTimeout(() => {
-      setGameState(prev => startNewHand(prev));
-    }, 5000);
+      setTimeout(() => {
+        const playerHands = activePlayers.map(p => ({
+          player: p,
+          hand: evaluateHand([...p.holeCards.map(c => ({ ...c, faceUp: true })), ...newState.communityCards]),
+        }));
+
+        playerHands.sort((a, b) => compareHands(b.hand, a.hand));
+        const winner = playerHands[0];
+
+        setCelebratingWinner(true);
+        winner.player.chips += newState.pot;
+        
+        setGameState(prev => ({
+          ...prev,
+          players: prev.players.map(p => 
+            p.id === winner.player.id ? { ...p, chips: p.chips + prev.pot } : p
+          ),
+          pot: 0,
+        }));
+
+        toast({
+          title: `🎉 ${winner.player.name} wins!`,
+          description: `${winner.hand.name} - Won ${newState.pot} chips`,
+        });
+
+        setTimeout(() => {
+          setGameState(prev => startNewHand(prev));
+        }, 4000);
+      }, activePlayers.length * 400 + 800);
+    }
 
     return newState;
   }
@@ -421,56 +497,74 @@ export function PokerTable() {
         <div className="relative aspect-[16/10] p-8">
           {/* Left Players */}
           <div className="absolute left-4 top-1/4 space-y-4">
-            <PlayerPosition
-              player={gameState.players[5]}
-              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[5].id}
-              showCards={false}
-            />
+            <div className="relative">
+              <PlayerPosition
+                player={gameState.players[5]}
+                isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[5].id}
+                showCards={false}
+              />
+              {gameState.players[5].isDealer && <DealerButton playerIndex={5} />}
+            </div>
           </div>
           
           {/* Top Left Player */}
           <div className="absolute top-4 left-1/4">
-            <PlayerPosition
-              player={gameState.players[4]}
-              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[4].id}
-              showCards={false}
-            />
+            <div className="relative">
+              <PlayerPosition
+                player={gameState.players[4]}
+                isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[4].id}
+                showCards={false}
+              />
+              {gameState.players[4].isDealer && <DealerButton playerIndex={4} />}
+            </div>
           </div>
           
           {/* Top Right Player */}
           <div className="absolute top-4 right-1/4">
-            <PlayerPosition
-              player={gameState.players[3]}
-              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[3].id}
-              showCards={false}
-            />
+            <div className="relative">
+              <PlayerPosition
+                player={gameState.players[3]}
+                isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[3].id}
+                showCards={false}
+              />
+              {gameState.players[3].isDealer && <DealerButton playerIndex={3} />}
+            </div>
           </div>
 
           {/* Right Players */}
           <div className="absolute right-4 top-1/4 space-y-4">
-            <PlayerPosition
-              player={gameState.players[2]}
-              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[2].id}
-              showCards={false}
-            />
+            <div className="relative">
+              <PlayerPosition
+                player={gameState.players[2]}
+                isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[2].id}
+                showCards={false}
+              />
+              {gameState.players[2].isDealer && <DealerButton playerIndex={2} />}
+            </div>
           </div>
           
           {/* Bottom Right Player */}
           <div className="absolute bottom-4 right-1/4">
-            <PlayerPosition
-              player={gameState.players[1]}
-              isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[1].id}
-              showCards={false}
-            />
+            <div className="relative">
+              <PlayerPosition
+                player={gameState.players[1]}
+                isActive={gameState.players[gameState.activePlayerIndex]?.id === gameState.players[1].id}
+                showCards={false}
+              />
+              {gameState.players[1].isDealer && <DealerButton playerIndex={1} />}
+            </div>
           </div>
 
           {/* Center - Pot and Community Cards */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6">
             {/* Pot */}
-            <div className="bg-background/20 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-primary/50">
+            <div className={`bg-background/20 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-primary/50 transition-all ${celebratingWinner ? 'animate-winner-celebration' : ''}`}>
               <div className="flex items-center gap-2">
                 <Circle className="w-5 h-5 fill-chip-gold text-chip-gold" />
                 <span className="text-2xl font-bold text-foreground">Pot: {gameState.pot}</span>
+                {celebratingWinner && (
+                  <Sparkles className="w-5 h-5 text-chip-gold animate-sparkle" />
+                )}
               </div>
             </div>
 
@@ -478,7 +572,9 @@ export function PokerTable() {
             {gameState.communityCards.length > 0 && (
               <div className="flex gap-2">
                 {gameState.communityCards.map((card, idx) => (
-                  <Card key={idx} card={card} delay={idx * 150} />
+                  <div key={idx} className="animate-card-deal" style={{ animationDelay: `${idx * 150}ms` }}>
+                    <Card card={card} delay={0} />
+                  </div>
                 ))}
               </div>
             )}
@@ -491,11 +587,14 @@ export function PokerTable() {
 
           {/* Bottom - Human Player */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-            <PlayerPosition
-              player={humanPlayer}
-              isActive={isPlayerTurn}
-              showCards={true}
-            />
+            <div className="relative">
+              <PlayerPosition
+                player={humanPlayer}
+                isActive={isPlayerTurn}
+                showCards={true}
+              />
+              {humanPlayer.isDealer && <DealerButton playerIndex={0} />}
+            </div>
           </div>
         </div>
 
