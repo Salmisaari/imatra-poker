@@ -241,18 +241,37 @@ export function PokerTable() {
       attempts++;
     }
 
-    // Check if betting round is complete: all active players have matching bets
-    // and we've gone full circle (back to first player who acted this round)
+    // Check if betting round is complete
     const allBetsEqual = activePlayers.every(p => p.currentBet === state.currentBet);
     
-    // In preflop, betting is complete when action returns to big blind
-    // In other rounds, betting is complete when action returns to first player after dealer
-    const firstToActIndex = state.phase === 'preflop' 
-      ? (state.dealerIndex + 3) % state.players.length // UTG (after BB)
-      : (state.dealerIndex + 1) % state.players.length; // SB position
+    // Determine the first player who should act in this betting round
+    let firstToActThisRound: number;
+    if (state.phase === 'preflop') {
+      // Preflop: first to act is UTG (player after big blind)
+      const bbIndex = state.players.findIndex(p => p.isBigBlind);
+      firstToActThisRound = (bbIndex + 1) % state.players.length;
+      // Find first active player from that position
+      let tempIdx = firstToActThisRound;
+      let searchAttempts = 0;
+      while (state.players[tempIdx].status !== 'active' && searchAttempts < state.players.length) {
+        tempIdx = (tempIdx + 1) % state.players.length;
+        searchAttempts++;
+      }
+      firstToActThisRound = tempIdx;
+    } else {
+      // Post-flop: first to act is first active player after dealer
+      firstToActThisRound = (state.dealerIndex + 1) % state.players.length;
+      let tempIdx = firstToActThisRound;
+      let searchAttempts = 0;
+      while (state.players[tempIdx].status !== 'active' && searchAttempts < state.players.length) {
+        tempIdx = (tempIdx + 1) % state.players.length;
+        searchAttempts++;
+      }
+      firstToActThisRound = tempIdx;
+    }
     
-    // Check if we've completed the betting round
-    const roundComplete = allBetsEqual && nextIndex === firstToActIndex;
+    // Round is complete if all bets are equal and we've cycled back to first actor
+    const roundComplete = allBetsEqual && nextIndex === firstToActThisRound;
 
     if (roundComplete || activePlayers.length === 1) {
       return advancePhase(state);
