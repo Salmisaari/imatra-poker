@@ -468,7 +468,7 @@ export function PokerTable() {
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-end justify-center p-4 pb-8 relative"
+      className="min-h-screen flex flex-col items-end justify-end p-4 pb-8 pt-20 relative"
       style={{
         backgroundImage: `url(${clubGTable})`,
         backgroundSize: 'cover',
@@ -487,7 +487,7 @@ export function PokerTable() {
         bigBlind={BIG_BLIND}
       />
       
-      <div className="w-full max-w-6xl relative z-10 mb-32">
+      <div className="w-full max-w-6xl relative z-10 mb-24">
         {/* Poker Table - Invisible container */}
         <div className="relative aspect-[16/10] p-8">
           {/* Left Players */}
