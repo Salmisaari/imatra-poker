@@ -8,6 +8,7 @@ import { BettingControls } from './BettingControls';
 import { Card } from './Card';
 import { Circle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import clubGTable from '@/assets/club-g-table.png';
 
 const SMALL_BLIND = 10;
 const BIG_BLIND = 20;
@@ -377,8 +378,19 @@ export function PokerTable() {
   const isPlayerTurn = gameState.activePlayerIndex === 0 && gameState.phase !== 'showdown';
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: `url(${clubGTable})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/40" />
+      
+      <div className="w-full max-w-6xl relative z-10">
         {/* Poker Table */}
         <div className="relative bg-gradient-to-br from-table-felt to-table-felt-dark rounded-[50%] border-8 border-table-edge aspect-[16/10] shadow-2xl p-8">
           {/* Top Players */}
