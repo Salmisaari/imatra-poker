@@ -13,6 +13,20 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['DM Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        'dm-sans': ['DM Sans', 'sans-serif'],
+      },
+      fontSize: {
+        'xs': 'var(--font-size-xs)',
+        'sm': 'var(--font-size-sm)',
+        'base': 'var(--font-size-base)',
+        'lg': 'var(--font-size-lg)',
+        'xl': 'var(--font-size-xl)',
+        '2xl': 'var(--font-size-2xl)',
+        '3xl': 'var(--font-size-3xl)',
+        '4xl': 'var(--font-size-4xl)',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

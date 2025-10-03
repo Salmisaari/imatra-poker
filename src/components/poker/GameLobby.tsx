@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
-import { Share2, Bot, Users } from 'lucide-react';
+import { Copy, Users, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import pokerTableBg from '@/assets/poker-table-bg.png';
 
@@ -20,6 +20,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
   const [showNamePrompt, setShowNamePrompt] = useState(false);
   const [action, setAction] = useState<'create' | 'join'>('create');
   const [joinCode, setJoinCode] = useState('');
+  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
   // Check for pending join code from URL
@@ -44,6 +45,18 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
 
   const handleStartAI = () => {
     onStartAIGame(lobbySize);
+  };
+
+  const handleCopyInviteLink = () => {
+    // Generate invite link with room code
+    const inviteLink = `${window.location.origin}?join=ROOM123`; // This will be dynamic with real room code
+    navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    toast({
+      title: 'Link copied!',
+      description: 'Share this link with your friends to join',
+    });
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleNameSubmit = () => {
@@ -112,8 +125,8 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
           <div className="space-y-8">
             {/* Hero Title */}
             <div className="text-center space-y-4">
-              <h1 className="text-6xl font-bold text-white drop-shadow-2xl">Imatra Poker</h1>
-              <p className="text-2xl text-white/90 drop-shadow-lg">Play with friends online or practice against AI</p>
+              <h1 className="font-bold text-white drop-shadow-2xl">Imatra Poker</h1>
+              <p className="text-xl text-white/90 drop-shadow-lg">Play with friends online or practice against AI</p>
             </div>
 
             {/* Game Mode Cards */}
@@ -121,8 +134,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               {/* Play Against AI */}
               <Card className="border-2 hover:border-primary transition-colors bg-background/95 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bot className="w-6 h-6 text-primary" />
+                <CardTitle>
                   Play against AI
                 </CardTitle>
                 <CardDescription>
@@ -161,8 +173,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               {/* Play Online */}
               <Card className="border-2 hover:border-primary transition-colors bg-background/95 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Share2 className="w-6 h-6 text-primary" />
+                <CardTitle>
                   Play with friends
                 </CardTitle>
                 <CardDescription>
@@ -188,13 +199,23 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
                     <span>8</span>
                   </div>
                 </div>
-                <Button 
-                  onClick={handleCreateOnlineGame}
-                  className="w-full"
-                  size="lg"
-                >
-                  Create online room
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleCreateOnlineGame}
+                    className="flex-1"
+                    size="lg"
+                  >
+                    Create room
+                  </Button>
+                  <Button
+                    onClick={handleCopyInviteLink}
+                    variant="outline"
+                    size="lg"
+                    className="px-3"
+                  >
+                    {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
             </div>
