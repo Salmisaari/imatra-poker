@@ -146,29 +146,13 @@ export function PokerTable() {
       },
     ];
 
-    return startNewHand({
-      players,
-      communityCards: [],
-      pot: 0,
-      currentBet: 0,
-      phase: 'waiting',
-      activePlayerIndex: 0,
-      dealerIndex: 1,
-      smallBlind: SMALL_BLIND,
-      bigBlind: BIG_BLIND,
-      deck: createDeck(),
-    });
+    // Create initial state without calling startNewHand (to avoid state setter issues during init)
+    return createHandState(players, 1);
   }
 
-  function startNewHand(prevState: GameState): GameState {
-    setDealingCards(true);
-    setRevealingCards(false);
-    setCelebratingWinner(false);
-    setHandNumber(prev => prev + 1);
-    playSound('cardDeal');
-    
+  function createHandState(players: Player[], dealerIndex: number): GameState {
     const deck = createDeck();
-    const players = prevState.players.map(p => ({
+    const preparedPlayers = players.map(p => ({
       ...p,
       holeCards: [],
       currentBet: 0,
@@ -178,25 +162,24 @@ export function PokerTable() {
       isBigBlind: false,
     }));
 
-    // Rotate dealer
-    const dealerIndex = (prevState.dealerIndex + 1) % players.length;
-    const sbIndex = (dealerIndex + 1) % players.length;
-    const bbIndex = (dealerIndex + 2) % players.length;
+    // Set dealer, blinds
+    const sbIndex = (dealerIndex + 1) % preparedPlayers.length;
+    const bbIndex = (dealerIndex + 2) % preparedPlayers.length;
 
-    players[dealerIndex].isDealer = true;
-    players[sbIndex].isSmallBlind = true;
-    players[bbIndex].isBigBlind = true;
+    preparedPlayers[dealerIndex].isDealer = true;
+    preparedPlayers[sbIndex].isSmallBlind = true;
+    preparedPlayers[bbIndex].isBigBlind = true;
 
     // Post blinds
-    players[sbIndex].currentBet = SMALL_BLIND;
-    players[sbIndex].chips -= SMALL_BLIND;
-    players[bbIndex].currentBet = BIG_BLIND;
-    players[bbIndex].chips -= BIG_BLIND;
+    preparedPlayers[sbIndex].currentBet = SMALL_BLIND;
+    preparedPlayers[sbIndex].chips -= SMALL_BLIND;
+    preparedPlayers[bbIndex].currentBet = BIG_BLIND;
+    preparedPlayers[bbIndex].chips -= BIG_BLIND;
 
     // Deal hole cards
     let deckCopy = [...deck];
     for (let i = 0; i < 2; i++) {
-      for (const player of players) {
+      for (const player of preparedPlayers) {
         if (player.status === 'active') {
           const [card, ...remaining] = deckCopy;
           player.holeCards.push({ ...card, faceUp: false });
@@ -205,15 +188,10 @@ export function PokerTable() {
       }
     }
 
-    const firstToAct = (bbIndex + 1) % players.length;
-
-    // Simulate dealing animation
-    setTimeout(() => {
-      setDealingCards(false);
-    }, 2000);
+    const firstToAct = (bbIndex + 1) % preparedPlayers.length;
 
     return {
-      players,
+      players: preparedPlayers,
       communityCards: [],
       pot: SMALL_BLIND + BIG_BLIND,
       currentBet: BIG_BLIND,
@@ -224,6 +202,24 @@ export function PokerTable() {
       bigBlind: BIG_BLIND,
       deck: deckCopy,
     };
+  }
+
+  function startNewHand(prevState: GameState): GameState {
+    setDealingCards(true);
+    setRevealingCards(false);
+    setCelebratingWinner(false);
+    setHandNumber(prev => prev + 1);
+    playSound('cardDeal');
+
+    // Rotate dealer
+    const newDealerIndex = (prevState.dealerIndex + 1) % prevState.players.length;
+    
+    // Simulate dealing animation
+    setTimeout(() => {
+      setDealingCards(false);
+    }, 2000);
+
+    return createHandState(prevState.players, newDealerIndex);
   }
 
   function handlePlayerAction(action: PlayerAction, amount?: number) {
