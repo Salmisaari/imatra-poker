@@ -56,24 +56,24 @@ export function EnhancedPlayerPosition({ player, isActive, showCards, timeRemain
         )}
 
         <div className="flex items-start gap-3">
-          {/* Cards */}
-          {player.holeCards.length > 0 && (
-            <div className="flex gap-1 flex-shrink-0">
-              {player.holeCards.map((card, index) => (
-                <div
-                  key={index}
-                  className="animate-card-deal"
-                  style={{ animationDelay: `${index * 200}ms` }}
-                >
-                  <Card
-                    card={showCards ? { ...card, faceUp: true } : card}
-                    delay={0}
-                    size="small"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Cards */}
+        {player.holeCards.length > 0 && (
+          <div className="flex gap-1 flex-shrink-0">
+            {player.holeCards.map((card, index) => (
+              <div
+                key={index}
+                className="animate-card-deal"
+                style={{ animationDelay: `${index * 200}ms` }}
+              >
+                <Card
+                  card={showCards ? { ...card, faceUp: true } : card}
+                  delay={0}
+                  size="normal"
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
           {/* Player Info */}
           <div className="flex-1">

@@ -32,18 +32,7 @@ export function BettingControls({
   };
 
   return (
-    <div className="bg-background/95 backdrop-blur-sm border-t-2 border-primary/50 rounded-t-3xl p-6 space-y-4 shadow-2xl animate-slide-in-bottom">
-      <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-2" />
-      
-      <div className="text-center text-sm text-muted-foreground">
-        Your chips: <span className="text-accent font-bold">{playerChips}</span>
-        {!canCheck && (
-          <span className="ml-3">
-            To call: <span className="text-primary font-bold">{amountToCall}</span>
-          </span>
-        )}
-      </div>
-
+    <div className="fixed bottom-4 right-4 z-50">
       <div className="grid grid-cols-4 gap-3">
         {/* Call Button */}
         {!canCheck && (
@@ -101,8 +90,8 @@ export function BettingControls({
       </div>
 
       {canRaise && maxRaise > 0 && (
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground text-center">
+        <div className="mt-3 bg-black/80 backdrop-blur-sm rounded-2xl p-3 border-2 border-green-500/50">
+          <div className="text-xs text-green-500 text-center font-bold mb-2">
             Raise amount: {raiseAmount}
           </div>
           <Slider

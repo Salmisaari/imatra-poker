@@ -596,16 +596,14 @@ export function PokerTable() {
 
         {/* Betting Controls Drawer */}
         {gameState.phase !== 'showdown' && gameState.phase !== 'waiting' && (
-          <div className="fixed bottom-0 left-0 right-0 z-50">
-            <BettingControls
-              playerChips={humanPlayer.chips}
-              currentBet={gameState.currentBet}
-              playerCurrentBet={humanPlayer.currentBet}
-              minimumRaise={gameState.bigBlind * 2}
-              onAction={handlePlayerAction}
-              disabled={!isPlayerTurn || isProcessing}
-            />
-          </div>
+          <BettingControls
+            playerChips={humanPlayer.chips}
+            currentBet={gameState.currentBet}
+            playerCurrentBet={humanPlayer.currentBet}
+            minimumRaise={gameState.bigBlind * 2}
+            onAction={handlePlayerAction}
+            disabled={!isPlayerTurn || isProcessing}
+          />
         )}
       </div>
     </div>
