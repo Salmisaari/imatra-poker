@@ -1,8 +1,5 @@
 import { Player } from '@/lib/poker/types';
 import { Card } from './Card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Circle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface EnhancedPlayerPositionProps {
@@ -13,12 +10,6 @@ interface EnhancedPlayerPositionProps {
 }
 
 export function EnhancedPlayerPosition({ player, isActive, showCards, timeRemaining }: EnhancedPlayerPositionProps) {
-  const getStackColor = () => {
-    if (player.chips > 1500) return 'text-chip-gold';
-    if (player.chips < 500) return 'text-destructive';
-    return 'text-foreground';
-  };
-
   const getBadgeText = () => {
     if (player.isDealer) return 'D';
     if (player.isBigBlind) return 'BB';
@@ -29,89 +20,83 @@ export function EnhancedPlayerPosition({ player, isActive, showCards, timeRemain
   const badgeText = getBadgeText();
 
   return (
-    <div
-      className={cn(
-        'relative bg-card/90 backdrop-blur-sm rounded-xl p-3 min-w-[140px] border-2 transition-all shadow-lg',
-        isActive ? 'border-primary shadow-primary/50 animate-pulse-glow' : 'border-border',
-        player.status === 'folded' && 'opacity-50 grayscale'
-      )}
-    >
-      {/* Position Badge */}
-      {badgeText && (
-        <Badge 
-          className={cn(
-            "absolute -top-2 -left-2 font-bold text-xs w-6 h-6 flex items-center justify-center rounded-full",
-            player.isDealer ? "bg-primary text-primary-foreground" : "bg-chip-gold text-black"
-          )}
-        >
-          {badgeText}
-        </Badge>
-      )}
-
-      {/* All-In Badge */}
-      {player.status === 'all-in' && (
-        <Badge className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground animate-pulse font-bold">
-          All in
-        </Badge>
-      )}
-
-      {/* Timer */}
-      {isActive && timeRemaining !== undefined && (
-        <div className={cn(
-          "absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold",
-          timeRemaining > 20 ? "bg-success text-success-foreground" :
-          timeRemaining > 10 ? "bg-primary text-primary-foreground" :
-          "bg-destructive text-destructive-foreground animate-pulse"
-        )}>
-          <Clock className="w-3 h-3" />
-          {timeRemaining}s
-        </div>
-      )}
-
-      {/* Player Info */}
-      <div className="flex items-center gap-2 mb-2">
-        <Avatar className="w-10 h-10 border-2 border-primary/30">
-          <AvatarFallback className="bg-muted text-foreground font-bold">
-            {player.name[0]}
-          </AvatarFallback>
-        </Avatar>
-        
-        <div className="flex-1">
-          <div className="font-bold text-sm text-foreground">{player.name}</div>
-          <div className={cn("text-xs font-mono", getStackColor())}>
-            <Circle className="w-3 h-3 inline fill-current mr-1" />
-            {player.chips}
-          </div>
-        </div>
-      </div>
-
-      {/* Current Bet */}
+    <div className="relative">
+      {/* Current Bet Chip - Yellow Oval */}
       {player.currentBet > 0 && (
-        <div className="mb-2 bg-primary/20 rounded px-2 py-1">
-          <div className="text-xs text-chip-gold font-bold">
-            Bet: {player.currentBet}
-          </div>
+        <div className="absolute -left-4 top-6 z-10 bg-yellow-300 text-black font-bold text-sm px-3 py-2 rounded-full min-w-[60px] text-center border-2 border-yellow-400">
+          {player.currentBet}
         </div>
       )}
 
-      {/* Cards */}
-      {player.holeCards.length > 0 && (
-        <div className="flex gap-1 justify-center">
-          {player.holeCards.map((card, index) => (
-            <div
-              key={index}
-              className="animate-card-deal"
-              style={{ animationDelay: `${index * 200}ms` }}
-            >
-              <Card
-                card={showCards ? { ...card, faceUp: true } : card}
-                delay={0}
-                size={showCards ? 'normal' : 'small'}
-              />
-            </div>
-          ))}
+      {/* Dealer/Blind Badge - White Circle */}
+      {badgeText && (
+        <div className="absolute -left-4 top-20 z-10 bg-white text-blue-600 font-bold text-lg w-12 h-12 flex items-center justify-center rounded-full border-4 border-white shadow-lg">
+          {badgeText}
         </div>
       )}
+
+      {/* Main Player Card */}
+      <div
+        className={cn(
+          'relative bg-white rounded-2xl p-4 min-w-[200px] shadow-xl transition-all',
+          isActive && 'ring-4 ring-yellow-400 ring-offset-2',
+          player.status === 'folded' && 'opacity-50 grayscale'
+        )}
+      >
+        {/* Position Badge - Green Circle Top Right */}
+        <div className="absolute -top-3 -right-3 bg-green-600 text-white font-bold text-lg w-12 h-12 flex items-center justify-center rounded-full border-4 border-white shadow-lg">
+          {player.position + 1}
+        </div>
+
+        {/* All-In Badge */}
+        {player.status === 'all-in' && (
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+            All in
+          </div>
+        )}
+
+        <div className="flex items-start gap-3">
+          {/* Cards */}
+          {player.holeCards.length > 0 && (
+            <div className="flex gap-1 flex-shrink-0">
+              {player.holeCards.map((card, index) => (
+                <div
+                  key={index}
+                  className="animate-card-deal"
+                  style={{ animationDelay: `${index * 200}ms` }}
+                >
+                  <Card
+                    card={showCards ? { ...card, faceUp: true } : card}
+                    delay={0}
+                    size="small"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Player Info */}
+          <div className="flex-1">
+            <div className="font-bold text-xl text-black mb-1">{player.name}</div>
+            <div className="text-black text-lg font-semibold">{player.chips}</div>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        {isActive && timeRemaining !== undefined && (
+          <div className="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              className={cn(
+                "h-full transition-all duration-1000",
+                timeRemaining > 20 ? "bg-gradient-to-r from-purple-500 to-lime-400" :
+                timeRemaining > 10 ? "bg-gradient-to-r from-purple-500 to-yellow-400" :
+                "bg-gradient-to-r from-red-500 to-orange-400"
+              )}
+              style={{ width: `${(timeRemaining / 30) * 100}%` }}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
