@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Share2, Bot, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import pokerTableImage from '@/assets/poker-table-hero.png';
+import pokerTableBg from '@/assets/poker-table-bg.png';
 
 interface GameLobbyProps {
   onStartAIGame: (numPlayers: number) => void;
@@ -64,54 +64,62 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      {showNamePrompt ? (
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Enter Your Name</CardTitle>
-            <CardDescription>
-              {action === 'join' && joinCode 
-                ? `Joining room: ${joinCode}` 
-                : 'Choose a name for the game'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              placeholder="Your name..."
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleNameSubmit()}
-              autoFocus
-            />
-            <div className="flex gap-2">
-              <Button onClick={handleNameSubmit} className="flex-1">
-                Continue
-              </Button>
-              <Button onClick={() => setShowNamePrompt(false)} variant="outline">
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="w-full max-w-6xl space-y-6">
-          {/* Hero Image */}
-          <div className="relative rounded-xl overflow-hidden shadow-2xl">
-            <img 
-              src={pokerTableImage} 
-              alt="Poker Table" 
-              className="w-full h-auto object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
-              <h1 className="text-5xl font-bold text-foreground mb-2">Texas Hold'em Poker</h1>
-              <p className="text-xl text-muted-foreground">Play with friends online or practice against AI</p>
-            </div>
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: `url(${pokerTableBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/60" />
+      
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-6xl">
+        {showNamePrompt ? (
+          <div className="flex items-center justify-center">
+            <Card className="w-full max-w-md bg-background/95 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Enter Your Name</CardTitle>
+                <CardDescription>
+                  {action === 'join' && joinCode 
+                    ? `Joining room: ${joinCode}` 
+                    : 'Choose a name for the game'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input
+                  placeholder="Your name..."
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleNameSubmit()}
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button onClick={handleNameSubmit} className="flex-1">
+                    Continue
+                  </Button>
+                  <Button onClick={() => setShowNamePrompt(false)} variant="outline">
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
+        ) : (
+          <div className="space-y-8">
+            {/* Hero Title */}
+            <div className="text-center space-y-4">
+              <h1 className="text-6xl font-bold text-white drop-shadow-2xl">Texas Hold'em Poker</h1>
+              <p className="text-2xl text-white/90 drop-shadow-lg">Play with friends online or practice against AI</p>
+            </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Play Against AI */}
-            <Card className="border-2 hover:border-primary transition-colors">
+            {/* Game Mode Cards */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Play Against AI */}
+              <Card className="border-2 hover:border-primary transition-colors bg-background/95 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bot className="w-6 h-6 text-primary" />
@@ -150,8 +158,8 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               </CardContent>
             </Card>
 
-            {/* Play Online */}
-            <Card className="border-2 hover:border-primary transition-colors">
+              {/* Play Online */}
+              <Card className="border-2 hover:border-primary transition-colors bg-background/95 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Share2 className="w-6 h-6 text-primary" />
@@ -189,9 +197,10 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
                 </Button>
               </CardContent>
             </Card>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
