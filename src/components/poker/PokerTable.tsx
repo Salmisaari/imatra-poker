@@ -494,7 +494,7 @@ export function PokerTable() {
         {/* Poker Table - Invisible container */}
         <div className="relative aspect-[16/10] p-8">
           {/* Left Players */}
-          <div className="absolute left-8 bottom-[46%] space-y-4">
+          <div className="absolute left-12 top-1/2 -translate-y-1/2">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[5]}
@@ -505,7 +505,7 @@ export function PokerTable() {
           </div>
           
           {/* Top Left Player */}
-          <div className="absolute top-4 left-1/4">
+          <div className="absolute top-12 left-1/4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[4]}
@@ -516,7 +516,7 @@ export function PokerTable() {
           </div>
           
           {/* Top Right Player */}
-          <div className="absolute top-4 right-1/4">
+          <div className="absolute top-12 right-1/4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[3]}
@@ -527,7 +527,7 @@ export function PokerTable() {
           </div>
 
           {/* Right Players */}
-          <div className="absolute right-8 bottom-[46%] space-y-4">
+          <div className="absolute right-12 top-1/2 -translate-y-1/2">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[2]}
@@ -538,7 +538,7 @@ export function PokerTable() {
           </div>
           
           {/* Bottom Right Player */}
-          <div className="absolute bottom-4 right-1/4">
+          <div className="absolute bottom-16 right-1/4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={gameState.players[1]}
@@ -583,7 +583,7 @@ export function PokerTable() {
           </div>
 
           {/* Bottom Left - Human Player */}
-          <div className="absolute bottom-8 left-8">
+          <div className="absolute bottom-16 left-1/4">
             <div className="relative">
               <EnhancedPlayerPosition
                 player={humanPlayer}
