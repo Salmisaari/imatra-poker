@@ -15,10 +15,10 @@ export function Card({ card, delay = 0 }: CardProps) {
   };
 
   const suitColors = {
-    hearts: 'text-red-500',
-    diamonds: 'text-red-500',
-    clubs: 'text-foreground',
-    spades: 'text-foreground',
+    hearts: 'text-red-600',
+    diamonds: 'text-red-600',
+    clubs: 'text-gray-900',
+    spades: 'text-gray-900',
   };
 
   const SuitIcon = suitIcons[card.suit];
