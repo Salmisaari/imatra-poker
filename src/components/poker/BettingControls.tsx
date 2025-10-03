@@ -31,10 +31,6 @@ export function BettingControls({
     onAction('raise', amountToCall + raiseAmount);
   };
 
-  const handleAllIn = () => {
-    onAction('all-in', playerChips);
-  };
-
   return (
     <div className="bg-background/95 backdrop-blur-sm border-t-2 border-primary/50 rounded-t-3xl p-6 space-y-4 shadow-2xl animate-slide-in-bottom">
       <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-2" />
@@ -48,54 +44,60 @@ export function BettingControls({
         )}
       </div>
 
-      <div className="flex gap-2">
-        <Button
-          variant="destructive"
-          onClick={() => onAction('fold')}
-          disabled={disabled}
-          className="flex-1"
-        >
-          Fold
-        </Button>
-
-        {canCheck ? (
-          <Button
-            variant="secondary"
-            onClick={() => onAction('check')}
-            disabled={disabled}
-            className="flex-1"
-          >
-            Check
-          </Button>
-        ) : (
-          <Button
-            variant="secondary"
-            onClick={() => onAction('call', amountToCall)}
-            disabled={disabled || amountToCall >= playerChips}
-            className="flex-1"
-          >
-            Call {amountToCall}
-          </Button>
+      <div className="grid grid-cols-4 gap-3">
+        {/* Call Button */}
+        {!canCheck && (
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-green-500 text-sm font-bold">C</span>
+            <Button
+              onClick={() => onAction('call', amountToCall)}
+              disabled={disabled || amountToCall >= playerChips}
+              className="w-full h-24 bg-black/80 hover:bg-black/90 border-2 border-green-500 text-green-500 hover:text-green-400 text-xl font-bold rounded-2xl"
+            >
+              CALL {amountToCall}
+            </Button>
+          </div>
         )}
 
+        {/* Raise Button */}
         {canRaise && (
-          <Button
-            onClick={handleRaise}
-            disabled={disabled || maxRaise <= 0}
-            className="flex-1 bg-primary hover:bg-primary/90"
-          >
-            Raise {raiseAmount}
-          </Button>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-green-500 text-sm font-bold">R</span>
+            <Button
+              onClick={handleRaise}
+              disabled={disabled || maxRaise <= 0}
+              className="w-full h-24 bg-black/80 hover:bg-black/90 border-2 border-green-500 text-green-500 hover:text-green-400 text-xl font-bold rounded-2xl"
+            >
+              RAISE
+            </Button>
+          </div>
         )}
 
-        <Button
-          variant="outline"
-          onClick={handleAllIn}
-          disabled={disabled}
-          className="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-        >
-          All in
-        </Button>
+        {/* Check Button */}
+        {canCheck && (
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-gray-500 text-sm font-bold">K</span>
+            <Button
+              onClick={() => onAction('check')}
+              disabled={disabled}
+              className="w-full h-24 bg-black/80 hover:bg-black/90 border-2 border-gray-600 text-gray-500 hover:text-gray-400 text-xl font-bold rounded-2xl"
+            >
+              CHECK
+            </Button>
+          </div>
+        )}
+
+        {/* Fold Button */}
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-orange-500 text-sm font-bold">F</span>
+          <Button
+            onClick={() => onAction('fold')}
+            disabled={disabled}
+            className="w-full h-24 bg-black/80 hover:bg-black/90 border-2 border-orange-500 text-orange-500 hover:text-orange-400 text-xl font-bold rounded-2xl"
+          >
+            FOLD
+          </Button>
+        </div>
       </div>
 
       {canRaise && maxRaise > 0 && (
