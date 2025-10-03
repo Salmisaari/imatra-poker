@@ -391,8 +391,8 @@ export function PokerTable() {
       <div className="absolute inset-0 bg-black/40" />
       
       <div className="w-full max-w-6xl relative z-10">
-        {/* Poker Table */}
-        <div className="relative bg-gradient-to-br from-table-felt to-table-felt-dark rounded-[50%] border-8 border-table-edge aspect-[16/10] shadow-2xl p-8">
+        {/* Poker Table - Invisible container */}
+        <div className="relative aspect-[16/10] p-8">
           {/* Top Players */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-8">
             {gameState.players.slice(1, 3).map(player => (
