@@ -135,10 +135,10 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               <Card className="border-2 hover:border-primary transition-colors bg-background/95 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle>
-                  Play against AI
+                  Virtual mode
                 </CardTitle>
                 <CardDescription>
-                  Practice your skills with computer opponents
+                  Play against AI opponents: Jaakko, Saku, Veeti, Tuomas, and Johannes
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -151,13 +151,13 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
                     value={[lobbySize]}
                     onValueChange={(value) => setLobbySize(value[0])}
                     min={2}
-                    max={8}
+                    max={6}
                     step={1}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>2</span>
-                    <span>8</span>
+                    <span>6</span>
                   </div>
                 </div>
                 <Button 
@@ -165,7 +165,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
                   className="w-full"
                   size="lg"
                 >
-                  Start AI game
+                  Start virtual game
                 </Button>
               </CardContent>
             </Card>

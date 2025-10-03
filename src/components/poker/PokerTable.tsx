@@ -81,7 +81,7 @@ export function PokerTable() {
       },
       {
         id: 'ai1',
-        name: 'Alice',
+        name: 'Jaakko',
         chips: STARTING_CHIPS,
         holeCards: [],
         currentBet: 0,
@@ -94,7 +94,7 @@ export function PokerTable() {
       },
       {
         id: 'ai2',
-        name: 'Bob',
+        name: 'Saku',
         chips: STARTING_CHIPS,
         holeCards: [],
         currentBet: 0,
@@ -107,7 +107,7 @@ export function PokerTable() {
       },
       {
         id: 'ai3',
-        name: 'Charlie',
+        name: 'Veeti',
         chips: STARTING_CHIPS,
         holeCards: [],
         currentBet: 0,
@@ -120,7 +120,7 @@ export function PokerTable() {
       },
       {
         id: 'ai4',
-        name: 'Diana',
+        name: 'Tuomas',
         chips: STARTING_CHIPS,
         holeCards: [],
         currentBet: 0,
@@ -133,7 +133,7 @@ export function PokerTable() {
       },
       {
         id: 'ai5',
-        name: 'Eve',
+        name: 'Johannes',
         chips: STARTING_CHIPS,
         holeCards: [],
         currentBet: 0,
