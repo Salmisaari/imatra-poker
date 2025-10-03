@@ -10,7 +10,7 @@ interface NamePromptProps {
   description?: string;
 }
 
-export function NamePrompt({ onSubmit, title = "Enter Your Name", description = "Choose a name to play poker" }: NamePromptProps) {
+export function NamePrompt({ onSubmit, title = "Enter your name", description = "Choose a name to play poker" }: NamePromptProps) {
   const [name, setName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {

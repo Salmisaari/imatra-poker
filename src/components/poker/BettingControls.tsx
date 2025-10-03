@@ -40,10 +40,10 @@ export function BettingControls({
       <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-2" />
       
       <div className="text-center text-sm text-muted-foreground">
-        Your Chips: <span className="text-accent font-bold">{playerChips}</span>
+        Your chips: <span className="text-accent font-bold">{playerChips}</span>
         {!canCheck && (
           <span className="ml-3">
-            To Call: <span className="text-primary font-bold">{amountToCall}</span>
+            To call: <span className="text-primary font-bold">{amountToCall}</span>
           </span>
         )}
       </div>
@@ -94,14 +94,14 @@ export function BettingControls({
           disabled={disabled}
           className="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
         >
-          All In
+          All in
         </Button>
       </div>
 
       {canRaise && maxRaise > 0 && (
         <div className="space-y-2">
           <div className="text-xs text-muted-foreground text-center">
-            Raise Amount: {raiseAmount}
+            Raise amount: {raiseAmount}
           </div>
           <Slider
             value={[raiseAmount]}

@@ -51,7 +51,7 @@ export function EnhancedPlayerPosition({ player, isActive, showCards, timeRemain
       {/* All-In Badge */}
       {player.status === 'all-in' && (
         <Badge className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground animate-pulse font-bold">
-          ALL IN
+          All in
         </Badge>
       )}
 

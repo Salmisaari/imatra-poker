@@ -58,7 +58,7 @@ export function PlayerPosition({ player, isActive, showCards }: PlayerPositionPr
         {/* Status Badge */}
         {player.status === 'all-in' && (
           <div className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-1 rounded-full">
-            ALL IN
+            All in
           </div>
         )}
       </div>

@@ -49,7 +49,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
   const handleNameSubmit = () => {
     if (!playerName.trim()) {
       toast({
-        title: 'Name Required',
+        title: 'Name required',
         description: 'Please enter your name',
         variant: 'destructive',
       });
@@ -82,7 +82,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
           <div className="flex items-center justify-center">
             <Card className="w-full max-w-md bg-background/95 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle>Enter Your Name</CardTitle>
+                <CardTitle>Enter your name</CardTitle>
                 <CardDescription>
                   {action === 'join' && joinCode 
                     ? `Joining room: ${joinCode}` 
@@ -123,7 +123,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bot className="w-6 h-6 text-primary" />
-                  Play Against AI
+                  Play against AI
                 </CardTitle>
                 <CardDescription>
                   Practice your skills with computer opponents
@@ -132,7 +132,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center justify-between">
-                    <span>Number of Players: {lobbySize}</span>
+                    <span>Number of players: {lobbySize}</span>
                     <Users className="w-4 h-4 text-muted-foreground" />
                   </Label>
                   <Slider
@@ -153,7 +153,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
                   className="w-full"
                   size="lg"
                 >
-                  Start AI Game
+                  Start AI game
                 </Button>
               </CardContent>
             </Card>
@@ -172,7 +172,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label className="flex items-center justify-between">
-                    <span>Lobby Size: {lobbySize}</span>
+                    <span>Lobby size: {lobbySize}</span>
                     <Users className="w-4 h-4 text-muted-foreground" />
                   </Label>
                   <Slider
@@ -193,7 +193,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
                   className="w-full"
                   size="lg"
                 >
-                  Create Online Room
+                  Create online room
                 </Button>
               </CardContent>
             </Card>

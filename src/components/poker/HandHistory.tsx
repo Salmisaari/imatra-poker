@@ -19,7 +19,7 @@ export function HandHistory({ hands }: HandHistoryProps) {
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <Trophy className="w-5 h-5 text-primary" />
-          Hand History
+          Hand history
         </CardTitle>
       </CardHeader>
       <CardContent>

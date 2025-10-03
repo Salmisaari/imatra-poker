@@ -40,7 +40,7 @@ All colors MUST be HSL.
     --input: 210 15% 20%;
     --ring: 45 95% 55%;
 
-    --radius: 0.75rem;
+    --radius: 0.1875rem;
 
     /* Poker-specific colors */
     --table-felt: 142 40% 28%;
