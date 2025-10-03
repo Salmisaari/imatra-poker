@@ -126,7 +126,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
             {/* Hero Title */}
             <div className="text-center space-y-4">
               <h1 className="font-bold text-white drop-shadow-2xl">Imatra Poker</h1>
-              <p className="text-xl text-white/90 drop-shadow-lg">Play with friends online or practice against AI</p>
+              <p className="text-xl text-white/90 drop-shadow-lg">The one poker room where Jaakko cannot cheat</p>
             </div>
 
             {/* Game Mode Cards */}
