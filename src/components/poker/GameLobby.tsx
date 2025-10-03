@@ -135,7 +135,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
               <Card className="border-2 hover:border-primary transition-colors bg-background/95 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle>
-                  Virtual mode
+                  Play with AI
                 </CardTitle>
                 <CardDescription>
                   Play against AI opponents: Jaakko, Saku, Veeti, Tuomas, and Johannes
