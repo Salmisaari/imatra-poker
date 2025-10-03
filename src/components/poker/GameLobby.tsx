@@ -65,7 +65,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 relative"
+      className="min-h-screen flex items-end justify-center p-4 pb-12 relative"
       style={{
         backgroundImage: `url(${pokerTableBg})`,
         backgroundSize: 'cover',
@@ -112,7 +112,7 @@ export function GameLobby({ onStartAIGame, onCreateOnlineGame, onJoinGame }: Gam
           <div className="space-y-8">
             {/* Hero Title */}
             <div className="text-center space-y-4">
-              <h1 className="text-6xl font-bold text-white drop-shadow-2xl">Texas Hold'em Poker</h1>
+              <h1 className="text-6xl font-bold text-white drop-shadow-2xl">Club G Poker</h1>
               <p className="text-2xl text-white/90 drop-shadow-lg">Play with friends online or practice against AI</p>
             </div>
 
